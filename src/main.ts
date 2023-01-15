@@ -1,27 +1,22 @@
-import WordPressLinks from '~/Data/Source/WordPressLinks';
-import DataStorage from '~/Data/Storage';
-import HelpscoutHack from '~/Hack/HelpscoutHack';
-import EditableElement from '~/UI/InputElement/EditableElement';
-import InputableElement from '~/UI/InputElement/InputableElement';
-import UserStorage from '~/page/options/UserStorage';
-import { isReplacable as isReplaceable, start } from '~/App/start';
+import { IDriver } from 'src/driver/Abstract';
+import { GoogleDocsDriver } from 'src/driver/GoogleDocs';
+import { Trianglify } from 'src/driver/Trianglify';
+import { createIcon } from 'src/UI/icon';
 
-(async function () {
-   const storage = new UserStorage();
-   const settings = await storage.getSettings();
+const DRIVERS: IDriver[] = [
+   new GoogleDocsDriver(),
+   new Trianglify(),
+];
+const driver: IDriver | null = DRIVERS.find((d) => d.isApplicable(window.location.host)) || null;
 
-   if (!start(settings.application)) {
-      return;
-   }
+function main() {
+   if (!driver) { return; }
+   driver.init(createIcon);
+}
 
-   const data = new DataStorage([WordPressLinks.from(settings.shortcuts, settings.application.request_interval)]);
-   document.addEventListener('keyup', onKeyUp);
-
-   async function onKeyUp(e: KeyboardEvent) {
-      if (e.code !== 'Space' && e.key !== 'Enter' || !isReplaceable(e.target as HTMLElement)) { return; };
-      const element = EditableElement.from(e.target) || InputableElement.from(e.target);
-      if (element === null) { return; }
-      await element.replace(data);
-      element.applyHacks([new HelpscoutHack(element.el)]);
-   }
-})();
+let isInit = false;
+window.addEventListener('load', () => {
+   if (isInit) { return; }
+   isInit = true;
+   main();
+});

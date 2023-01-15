@@ -1,10 +1,6 @@
 'use strict';
 
-// https://www.chromium.org/Home/chromium-security/extension-content-script-fetches#TOC-2.-Avoid-Cross-Origin-Fetches-in-Content-Scripts
-// @ts-ignore
-chrome.runtime.onMessage.addListener(({ url, options }, _sender, sendResponse) => {
-    fetch(url, options)
-        .then((res) => res.json())
-        .then(sendResponse, sendResponse);
+chrome.runtime.onMessage.addListener((url, _sender, sendResponse) => {
+    chrome.downloads.download({ url });
     return true;
 });

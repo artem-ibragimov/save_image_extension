@@ -1,11 +1,11 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "author": "artem.ibragimov",
-    "name": "QuickLink",
-    "description": "A browser extension to easily embed links to another website",
+    "name": "SaveImage",
+    "description": "A browser extension to easily save images",
     "version": "0.0.1",
     "permissions": [
-        "storage"
+        "downloads"
     ],
     "icons": {
         "16": "./asset/i16.png",
@@ -13,21 +13,17 @@
         "128": "./asset/i128.png"
     },
     "background": {
-        "scripts": [
-            "background.js"
-        ],
-        "persistent": false
+        "service_worker": "background.js"
     },
     "content_scripts": [
         {
             "matches": [
-                "<all_urls>"
+                "https://trianglify.io/",
+                "https://docs.google.com/*"
             ],
-            "all_frames": true,
             "js": [
                 "main.js"
             ]
         }
-    ],
-    "options_page": "options.html"
+    ]
 }
